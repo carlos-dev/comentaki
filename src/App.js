@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/react-in-jsx-scope */
+import { useEffect, useState } from 'react';
+import {
+  getDatabase, ref, onValue, goOffline,
+} from 'firebase/database';
+import './firebase';
+
+const db = getDatabase();
+
+function Comments() {
+  const [data, setData] = useState({});
+
+  const dataRef = ref(db, 'test');
+  useEffect(() => {
+    onValue(dataRef, (snapshot) => {
+      setData(snapshot.val());
+    });
+
+    return () => {
+      goOffline();
+    };
+  }, []);
+
+  return <pre>{JSON.stringify(data)}</pre>;
+}
 
 function App() {
+  const [visible, setVisible] = useState(true);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button type="button" onClick={() => setVisible(!visible)}>Toggle</button>
+      {visible && <Comments />}
     </div>
   );
 }
