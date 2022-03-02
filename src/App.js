@@ -36,32 +36,53 @@ const useDatabasePush = (endpoint) => {
   return [status, save];
 };
 
-function Comments({ visible }) {
-  const endpoint = visible ? 'test' : 'test/a';
-  const data = useDatabase(endpoint);
+function Comment({ comment }) {
+  return (
+    <div>
+      {comment.content}
+      {' '}
+      por:
+      {comment.user.name}
+    </div>
+  );
+}
 
-  return <pre>{JSON.stringify(data)}</pre>;
+function Comments() {
+  const data = useDatabase('comments');
+
+  if (!data) {
+    return <p>Não há comentários</p>;
+  }
+
+  const ids = Object.keys(data);
+
+  if (ids.length === 0) return <p>Carregando</p>;
+
+  return ids.map((id) => <Comment key={id} comment={data[id]} />);
 }
 
 function App() {
-  const [visible, setVisible] = useState(true);
-  const [status, save] = useDatabasePush('test');
+  const [, save] = useDatabasePush('comments');
 
   return (
     <div>
       <button
         type="button"
         onClick={() => {
-          setVisible(!visible);
-          save({ a: 3, b: 4 });
+          save({
+            content: 'Hello World',
+            user: {
+              id: '1',
+              name: 'John Doe',
+            },
+          });
         }}
       >
         Toggle
       </button>
       status:
       {' '}
-      {status}
-      <Comments visible={visible} />
+      <Comments />
     </div>
   );
 }
