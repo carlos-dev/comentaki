@@ -3,7 +3,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { useEffect, useState } from 'react';
 import {
-  getDatabase, ref, onValue, goOffline, push, set,
+  getDatabase, ref, onValue, goOffline, push, serverTimestamp,
 } from 'firebase/database';
 import './firebase';
 
@@ -43,6 +43,10 @@ function Comment({ comment }) {
       {' '}
       por:
       {comment.user.name}
+      {' '}
+      em:
+      {' '}
+      {new Date(comment.createdAt).toLocaleString()}
     </div>
   );
 }
@@ -61,27 +65,42 @@ function Comments() {
   return ids.map((id) => <Comment key={id} comment={data[id]} />);
 }
 
-function App() {
+function NewComment() {
   const [, save] = useDatabasePush('comments');
+  const [comment, setComment] = useState('');
+
+  const createComment = () => {
+    if (comment === '') return;
+
+    save({
+      content: comment,
+      createdAt: serverTimestamp(),
+      user: {
+        id: '1',
+        name: 'John Doe',
+      },
+    });
+
+    setComment('');
+  };
 
   return (
     <div>
+      <textarea value={comment} onChange={(evt) => setComment(evt.target.value)} />
       <button
         type="button"
-        onClick={() => {
-          save({
-            content: 'Hello World',
-            user: {
-              id: '1',
-              name: 'John Doe',
-            },
-          });
-        }}
+        onClick={createComment}
       >
-        Toggle
+        Comentar
       </button>
-      status:
-      {' '}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <NewComment />
       <Comments />
     </div>
   );
