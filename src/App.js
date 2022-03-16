@@ -5,9 +5,47 @@ import { useEffect, useState } from 'react';
 import {
   getDatabase, ref, onValue, goOffline, push, serverTimestamp,
 } from 'firebase/database';
+import {
+  getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged,
+} from 'firebase/auth';
+
 import './firebase';
 
 const db = getDatabase();
+
+const auth = getAuth();
+console.log(auth);
+createUserWithEmailAndPassword(auth, 'carlos@gmail.com', '123456')
+  .then((userCredential) => {
+    // Signed in
+    const { user } = userCredential;
+    console.log(userCredential);
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log('errorCode', errorCode);
+    console.log('errorMessage', errorMessage);
+    // ..
+  });
+
+// updateProfile(auth.currentUser, {
+//   displayName: 'Carlos',
+// }).then((response) => {
+//   console.log('Updated', response);
+// }).catch((error) => {
+//   console.log(error);
+// });
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('user', user.displayName);
+    updateProfile(user, {
+      displayName: 'Carlos',
+    });
+  }
+});
 
 const useDatabase = (endpoint) => {
   const [data, setData] = useState({});
