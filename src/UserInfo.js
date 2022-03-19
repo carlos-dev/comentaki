@@ -38,6 +38,7 @@ export function UserInfo() {
       </p>
       <input type="text" value={newDisplayName} onChange={onChange} />
       <button type="button" onClick={onSave}>Save displayName</button>
+      <button type="button" onClick={auth.handleSignOut}>Sair</button>
     </>
 
   );

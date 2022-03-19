@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
 import React, { createContext, useState, useEffect } from 'react';
 import {
-  createUserWithEmailAndPassword, getAuth, onAuthStateChanged, updateProfile,
+  createUserWithEmailAndPassword, getAuth, onAuthStateChanged, updateProfile, signOut,
 } from 'firebase/auth';
 
 export const AuthContext = createContext();
@@ -60,6 +60,16 @@ const useCreateUser = () => {
   return [state, createUser];
 };
 
+const handleSignOut = () => {
+  signOut(auth)
+    .then(() => {
+      console.log('Signed out');
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 export function AuthProvider({ children }) {
   const user = useGetUser();
   const [createUserState, createUser] = useCreateUser();
@@ -69,6 +79,7 @@ export function AuthProvider({ children }) {
       user,
       createUserState,
       createUser,
+      handleSignOut,
     }}
     >
       {children}
